@@ -12,19 +12,18 @@ const btnVideo = document.getElementById("downloadVideo");
 const btnMP3 = document.getElementById("downloadMP3");
 
 const gallery = document.getElementById("photoGallery");
-const hashtags = document.getElementById("hashtags");
 
 let videoUrl = "";
 let mp3Url = "";
 let photoUrls = [];
 
-fetchBtn.onclick = getData;
+fetchBtn.addEventListener("click", getData);
 
-urlInput.addEventListener("keypress", (e) => {
+urlInput.addEventListener("keypress", function (e) {
   if (e.key === "Enter") getData();
 });
 
-clearBtn.onclick = clearData;
+clearBtn.addEventListener("click", clearData);
 
 async function getData() {
   let url = urlInput.value.trim();
@@ -44,29 +43,30 @@ async function getData() {
     mp3Url = data.music;
     photoUrls = data.images || [];
 
-    setTitle(data.title);
-
-    gallery.innerHTML = "";
+    title.innerText = data.title;
 
     btnVideo.style.display = "none";
     btnMP3.style.display = "none";
 
+    gallery.innerHTML = "";
+
     if (photoUrls.length > 0) {
       video.style.display = "none";
 
-      photoUrls.forEach((img, i) => {
+      photoUrls.forEach((url, index) => {
         let card = document.createElement("div");
+
         card.className = "photo-card";
 
         card.innerHTML = `
-<img src="${img}">
+<img src="${url}">
 <button class="photo-download">
 <i class="bi bi-download"></i>
 </button>
 `;
 
         card.querySelector("button").onclick = () => {
-          autoDownload(img, `tiktok-photo-${i + 1}.jpg`);
+          autoDownload(url, `tiktok-photo-${index + 1}.jpg`);
         };
 
         gallery.appendChild(card);
@@ -80,8 +80,8 @@ async function getData() {
     }
 
     result.classList.remove("hidden");
-  } catch {
-    alert("Semua API gagal");
+  } catch (err) {
+    alert("Semua API gagal mengambil data");
   }
 
   loading.classList.add("hidden");
@@ -112,59 +112,55 @@ async function fetchTikTok(url) {
 
       if (json.video) {
         return {
-          title: json.title || "",
+          title: json.title || "TikTok Video",
           play: json.video.noWatermark,
           music: json.music,
           images: json.images,
         };
       }
-    } catch {}
+    } catch (e) {
+      continue;
+    }
   }
 
-  throw new Error();
+  throw new Error("All API failed");
 }
 
-function setTitle(text) {
-  title.innerText = text;
+btnVideo.onclick = function () {
+  if (videoUrl) autoDownload(videoUrl, "tiktok-video.mp4");
+};
 
-  hashtags.innerHTML = "";
+btnMP3.onclick = function () {
+  if (mp3Url) autoDownload(mp3Url, "tiktok-audio.mp3");
+};
 
-  let tags = text.match(/#\w+/g);
+async function autoDownload(url, filename) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
 
-  if (tags) {
-    tags.forEach((tag) => {
-      let span = document.createElement("span");
-      span.className = "hashtag";
-      span.innerText = tag;
+    const blobUrl = window.URL.createObjectURL(blob);
 
-      hashtags.appendChild(span);
-    });
+    const a = document.createElement("a");
+
+    a.href = blobUrl;
+    a.download = filename;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(blobUrl);
+  } catch {
+    alert("Download gagal");
   }
-}
-
-btnVideo.onclick = () => autoDownload(videoUrl, "tiktok-video.mp4");
-btnMP3.onclick = () => autoDownload(mp3Url, "tiktok-audio.mp3");
-
-async function autoDownload(url, name) {
-  const res = await fetch(url);
-  const blob = await res.blob();
-
-  const a = document.createElement("a");
-
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
 }
 
 function clearData() {
   urlInput.value = "";
-  title.innerText = "";
-  hashtags.innerHTML = "";
-  gallery.innerHTML = "";
   video.src = "";
+  gallery.innerHTML = "";
+  title.innerText = "";
 
   result.classList.add("hidden");
 }
