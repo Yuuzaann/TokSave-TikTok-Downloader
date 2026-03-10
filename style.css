@@ -1,334 +1,294 @@
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #0f172a, #020617);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+body{
+margin:0;
+font-family:"Poppins",sans-serif;
+
+background:
+radial-gradient(circle at 20% 20%,#1e293b,#020617);
+
+color:white;
+
+min-height:100vh;
+display:flex;
+justify-content:center;
 }
 
-.app-wrapper {
-  width: 100%;
-  padding: 20px;
+.app-wrapper{
+
+width:100%;
+max-width:520px;
+
+padding:16px;
+
 }
 
-.downloader-card {
-  max-width: 480px;
-  margin: auto;
-  padding: 30px;
 
-  border-radius: 20px;
+.downloader-card{
 
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(14px);
+padding:22px;
 
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+border-radius:22px;
+
+background:rgba(255,255,255,0.06);
+
+backdrop-filter:blur(16px);
+
+box-shadow:
+
+0 10px 40px rgba(0,0,0,0.6),
+
+inset 0 1px 0 rgba(255,255,255,0.05);
+
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 25px;
+
+.header{
+
+text-align:center;
+margin-bottom:18px;
+
 }
 
-.logo {
-  font-size: 40px;
-  color: #ff0050;
+.logo{
+
+font-size:38px;
+color:#ff0050;
+
 }
 
-.header h1 {
-  font-size: 26px;
-  font-weight: 700;
+.header h1{
+
+font-size:24px;
+font-weight:700;
+
+margin:6px 0;
+
 }
 
-.header p {
-  color: #94a3b8;
-  font-size: 14px;
+.header p{
+
+color:#94a3b8;
+font-size:13px;
+
 }
 
-.input-area {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+
+
+.input-area{
+
+display:flex;
+gap:8px;
+
+background:#020617;
+
+padding:8px;
+
+border-radius:14px;
+
+box-shadow:
+inset 0 0 0 1px rgba(255,255,255,0.05);
+
 }
 
-.input-area input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  background: #020617;
-  color: white;
+
+.input-area input{
+
+flex:1;
+
+border:none;
+outline:none;
+
+background:transparent;
+
+color:white;
+
+font-size:15px;
+
+padding:8px;
+
 }
 
-.input-area button {
-  border: none;
-  border-radius: 10px;
-  width: 50px;
-  color: white;
-  font-size: 18px;
-  transition: 0.3s;
+
+.input-area button{
+
+border:none;
+
+width:44px;
+height:44px;
+
+border-radius:10px;
+
+font-size:18px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
 }
 
-#fetchBtn {
-  background: #ff0050;
+
+#fetchBtn{
+
+background:linear-gradient(90deg,#ff0050,#ff3b82);
+
 }
 
-#clearBtn {
-  background: #334155;
+#clearBtn{
+
+background:#334155;
+
 }
 
-.input-area button:hover {
-  transform: scale(1.05);
+
+
+.loading{
+
+text-align:center;
+
+padding:20px;
+
+color:#94a3b8;
+
 }
 
-.loading {
-  text-align: center;
+
+
+.result{
+
+margin-top:10px;
+text-align:center;
+
 }
 
-.result {
-  text-align: center;
+
+#title{
+
+font-size:16px;
+margin-bottom:10px;
+
+color:#cbd5f5;
+
 }
 
-#video {
-  width: 100%;
-  margin-top: 10px;
-  border-radius: 12px;
+
+
+#video{
+
+width:100%;
+
+border-radius:14px;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.6);
+
+margin-bottom:12px;
+
 }
 
-.download-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
+
+
+.download-buttons{
+
+display:flex;
+gap:10px;
+
 }
 
-.download-buttons button {
-  flex: 1;
-  padding: 12px;
 
-  border: none;
-  border-radius: 10px;
+.download-buttons button{
 
-  background: linear-gradient(90deg, #ff0050, #ff3b82);
+flex:1;
 
-  color: white;
-  font-weight: 600;
+border:none;
 
-  transition: 0.3s;
+padding:12px;
+
+border-radius:12px;
+
+font-weight:600;
+
+background:linear-gradient(90deg,#ff0050,#ff3b82);
+
+color:white;
+
+font-size:15px;
+
 }
 
-.download-buttons button:hover {
-  transform: scale(1.05);
+
+
+.photo-gallery{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:10px;
+
+margin-top:12px;
+
 }
 
-.photo-gallery {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 
-  gap: 12px;
-  margin-top: 15px;
+
+.photo-card{
+
+position:relative;
+
 }
 
-.photo-card {
-  position: relative;
+
+.photo-card img{
+
+width:100%;
+border-radius:12px;
+
 }
 
-.photo-card img {
-  width: 100%;
-  border-radius: 10px;
+
+.photo-download{
+
+position:absolute;
+
+bottom:6px;
+right:6px;
+
+border:none;
+
+background:#ff0050;
+
+color:white;
+
+font-size:12px;
+
+padding:6px 8px;
+
+border-radius:8px;
+
 }
 
-.photo-download {
-  position: absolute;
 
-  bottom: 8px;
-  right: 8px;
 
-  background: #ff0050;
-  border: none;
+.footer{
 
-  color: white;
+text-align:center;
 
-  border-radius: 8px;
-  padding: 6px 8px;
+margin-top:18px;
 
-  font-size: 14px;
-  cursor: pointer;
+font-size:12px;
+
+color:#94a3b8;
+
 }
 
-.footer {
-  margin-top: 25px;
-  text-align: center;
 
-  font-size: 14px;
-  color: #94a3b8;
+.footer a{
+
+color:#ff3b82;
+text-decoration:none;
+
 }
 
-.footer a {
-  color: #ff3b82;
-  text-decoration: none;
-}
 
-.footer a:hover {
-  text-decoration: underline;
-}
 
-/* ========================================
-   MOBILE RESPONSIVE STYLES
-   ======================================== */
-
-/* Mobile (max-width: 480px) */
-@media (max-width: 480px) {
-  .app-wrapper {
-    padding: 12px;
-  }
-
-  .downloader-card {
-    padding: 20px;
-    border-radius: 16px;
-  }
-
-  .logo {
-    font-size: 32px;
-  }
-
-  .header h1 {
-    font-size: 22px;
-  }
-
-  .header p {
-    font-size: 12px;
-  }
-
-  .input-area {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .input-area input {
-    padding: 14px;
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-
-  .input-area button {
-    width: 100%;
-    height: 48px; /* Touch-friendly */
-    font-size: 20px;
-  }
-
-  #fetchBtn,
-  #clearBtn {
-    flex: 1;
-  }
-
-  .download-buttons {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .download-buttons button {
-    height: 48px; /* Touch-friendly */
-    font-size: 15px;
-  }
-
-  .photo-gallery {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  #title {
-    font-size: 16px;
-  }
-
-  .footer {
-    font-size: 12px;
-  }
-}
-
-/* Extra small screens (max-width: 380px) */
-@media (max-width: 380px) {
-  .downloader-card {
-    padding: 16px;
-  }
-
-  .header h1 {
-    font-size: 20px;
-  }
-
-  .download-buttons button {
-    padding: 14px;
-    font-size: 14px;
-  }
-
-  .photo-gallery {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* iPhone Notch / Safe Area Support */
-@supports (padding: max(0px)) {
-  .app-wrapper {
-    padding-left: max(12px, env(safe-area-inset-left));
-    padding-right: max(12px, env(safe-area-inset-right));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-  }
-}
-
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-  .input-area button:active,
-  .download-buttons button:active,
-  .photo-download:active {
-    transform: scale(0.95);
-    opacity: 0.8;
-  }
-
-  /* Remove hover delay on touch devices */
-  .input-area button,
-  .download-buttons button,
-  .photo-download {
-    transition:
-      transform 0.15s,
-      opacity 0.15s;
-  }
-}
-
-/* Landscape mobile */
-@media (max-height: 500px) and (orientation: landscape) {
-  .downloader-card {
-    padding: 16px;
-    margin: 8px auto;
-  }
-
-  .header {
-    margin-bottom: 12px;
-  }
-
-  .header h1 {
-    font-size: 18px;
-    margin: 4px 0;
-  }
-
-  .header p {
-    display: none;
-  }
-
-  .logo {
-    font-size: 24px;
-  }
-
-  #video {
-    max-height: 200px;
-  }
-
-  .photo-gallery {
-    max-height: 150px;
-    overflow-y: auto;
-  }
-}
-
-.hidden {
-  display: none;
+.hidden{
+display:none;
 }
