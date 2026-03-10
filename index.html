@@ -2,7 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#0f172a" />
 
     <title>TokSave - TikTok Downloader</title>
 
@@ -50,8 +59,11 @@
         <div class="input-area">
           <input
             id="url"
-            type="text"
+            type="url"
             placeholder="Paste link TikTok disini..."
+            autocomplete="url"
+            enterkeyhint="go"
+            inputmode="url"
           />
 
           <button id="fetchBtn">
@@ -71,7 +83,7 @@
         <div id="result" class="result hidden">
           <h4 id="title"></h4>
 
-          <video id="video" controls></video>
+          <video id="video" controls playsinline webkit-playsinline></video>
 
           <div id="photoGallery" class="photo-gallery"></div>
 
