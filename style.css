@@ -175,6 +175,160 @@ body {
   text-decoration: underline;
 }
 
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .app-wrapper {
+    padding: 12px;
+  }
+
+  .downloader-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .logo {
+    font-size: 32px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .header p {
+    font-size: 12px;
+  }
+
+  .input-area {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .input-area input {
+    padding: 14px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .input-area button {
+    width: 100%;
+    height: 48px; /* Touch-friendly */
+    font-size: 20px;
+  }
+
+  #fetchBtn,
+  #clearBtn {
+    flex: 1;
+  }
+
+  .download-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .download-buttons button {
+    height: 48px; /* Touch-friendly */
+    font-size: 15px;
+  }
+
+  .photo-gallery {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  #title {
+    font-size: 16px;
+  }
+
+  .footer {
+    font-size: 12px;
+  }
+}
+
+/* Extra small screens (max-width: 380px) */
+@media (max-width: 380px) {
+  .downloader-card {
+    padding: 16px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .download-buttons button {
+    padding: 14px;
+    font-size: 14px;
+  }
+
+  .photo-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* iPhone Notch / Safe Area Support */
+@supports (padding: max(0px)) {
+  .app-wrapper {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .input-area button:active,
+  .download-buttons button:active,
+  .photo-download:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+
+  /* Remove hover delay on touch devices */
+  .input-area button,
+  .download-buttons button,
+  .photo-download {
+    transition:
+      transform 0.15s,
+      opacity 0.15s;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .downloader-card {
+    padding: 16px;
+    margin: 8px auto;
+  }
+
+  .header {
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+    margin: 4px 0;
+  }
+
+  .header p {
+    display: none;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+
+  #video {
+    max-height: 200px;
+  }
+
+  .photo-gallery {
+    max-height: 150px;
+    overflow-y: auto;
+  }
+}
+
 .hidden {
   display: none;
 }
