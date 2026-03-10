@@ -6,9 +6,13 @@
 
     <title>TokSave - TikTok Downloader</title>
 
-    <link rel="icon" href="favicon.png" />
+    <link rel="icon" type="image/png" href="favicon.png" />
 
-    <!-- GOOGLE FONT -->
+    <!-- PERFORMANCE -->
+    <link rel="preconnect" href="https://www.tikwm.com" />
+    <link rel="dns-prefetch" href="https://www.tikwm.com" />
+
+    <!-- FONT -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -20,41 +24,27 @@
       rel="stylesheet"
     />
 
-    <!-- BOOTSTRAP ICON -->
+    <!-- ICON -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
 
-    <!-- BOXICONS -->
-    <link
-      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-
     <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- ANIMATE -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
 
     <link rel="stylesheet" href="style.css" />
   </head>
 
   <body>
-    <div class="main-container">
-      <div class="card-downloader animate__animated animate__fadeInUp">
+    <div class="app-wrapper">
+      <div class="downloader-card">
         <div class="header">
-          <div class="logo-box">
-            <i class="bi bi-tiktok"></i>
-          </div>
+          <i class="bi bi-tiktok logo"></i>
 
           <h1>TokSave</h1>
 
-          <p>Download video, MP3 dan slideshow tanpa watermark</p>
+          <p>Download video, mp3, dan slideshow tanpa watermark</p>
         </div>
 
         <div class="input-area">
@@ -65,23 +55,18 @@
           />
 
           <button id="fetchBtn">
-            <i class="bx bx-search"></i>
-          </button>
-
-          <button id="clearBtn">
-            <i class="bx bx-x"></i>
+            <i class="bi bi-search"></i>
           </button>
         </div>
 
         <div id="loading" class="loading hidden">
           <div class="spinner-border text-danger"></div>
+
           <p>Mengambil data...</p>
         </div>
 
         <div id="result" class="result hidden">
-          <h4 id="title" class="video-title"></h4>
-
-          <div id="hashtags" class="hashtags"></div>
+          <h4 id="title"></h4>
 
           <video id="video" controls></video>
 
@@ -89,22 +74,22 @@
 
           <div class="download-buttons">
             <button id="downloadVideo">
-              <i class="bx bx-download"></i>
+              <i class="bi bi-download"></i>
               Video
             </button>
 
             <button id="downloadMP3">
-              <i class="bx bx-music"></i>
+              <i class="bi bi-music-note"></i>
               MP3
             </button>
           </div>
         </div>
       </div>
 
-      <footer>
+      <footer class="footer">
         <p>
           © 2026 Copyright by
-          <a href="https://github.com/Yuuzaann">Yuuzaann</a>
+          <a href="https://github.com/Yuuzaann" target="_blank"> Yuuzaann </a>
         </p>
       </footer>
     </div>
