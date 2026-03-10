@@ -25,6 +25,20 @@ urlInput.addEventListener("keypress", function (e) {
 
 clearBtn.addEventListener("click", clearData);
 
+/* RANDOM FILENAME */
+function randomName(ext) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  let result = "";
+
+  for (let i = 0; i < 10; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return result + "." + ext;
+}
+
 async function getData() {
   const url = urlInput.value.trim();
 
@@ -67,7 +81,7 @@ async function getData() {
         `;
 
         card.querySelector("button").onclick = () => {
-          directDownload(img, `tiktok-photo-${index + 1}.jpg`);
+          directDownload(img, randomName("jpg"));
         };
 
         gallery.appendChild(card);
@@ -140,11 +154,15 @@ async function fetchTikTok(url) {
 }
 
 btnVideo.onclick = () => {
-  if (videoUrl) directDownload(videoUrl, "tiktok-video.mp4");
+  if (videoUrl) {
+    directDownload(videoUrl, randomName("mp4"));
+  }
 };
 
 btnMP3.onclick = () => {
-  if (mp3Url) directDownload(mp3Url, "tiktok-audio.mp3");
+  if (mp3Url) {
+    directDownload(mp3Url, randomName("mp3"));
+  }
 };
 
 function directDownload(url, filename) {
