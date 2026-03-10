@@ -26,7 +26,7 @@ urlInput.addEventListener("keypress", function (e) {
 clearBtn.addEventListener("click", clearData);
 
 async function getData() {
-  let url = urlInput.value.trim();
+  const url = urlInput.value.trim();
 
   if (!url) {
     alert("Masukkan link TikTok");
@@ -37,50 +37,56 @@ async function getData() {
   result.classList.add("hidden");
 
   try {
-    let data = await fetchTikTok(url);
+    const data = await fetchTikTok(url);
+
+    title.innerText = data.title || "TikTok Video";
 
     videoUrl = data.play;
     mp3Url = data.music;
     photoUrls = data.images || [];
 
-    title.innerText = data.title;
+    gallery.innerHTML = "";
 
     btnVideo.style.display = "none";
     btnMP3.style.display = "none";
 
-    gallery.innerHTML = "";
-
+    // slideshow
     if (photoUrls.length > 0) {
       video.style.display = "none";
 
-      photoUrls.forEach((url, index) => {
-        let card = document.createElement("div");
+      photoUrls.forEach((img, index) => {
+        const card = document.createElement("div");
 
         card.className = "photo-card";
 
         card.innerHTML = `
-<img src="${url}">
-<button class="photo-download">
-<i class="bi bi-download"></i>
-</button>
-`;
+        <img src="${img}">
+        <button class="photo-download">
+          Download
+        </button>
+        `;
 
         card.querySelector("button").onclick = () => {
-          autoDownload(url, `tiktok-photo-${index + 1}.jpg`);
+          directDownload(img, `tiktok-photo-${index + 1}.jpg`);
         };
 
         gallery.appendChild(card);
       });
-    } else {
+    }
+
+    // video
+    else if (videoUrl) {
       video.style.display = "block";
       video.src = videoUrl;
 
       btnVideo.style.display = "block";
-      btnMP3.style.display = "block";
+
+      if (mp3Url) btnMP3.style.display = "block";
     }
 
     result.classList.remove("hidden");
   } catch (err) {
+    console.error(err);
     alert("Semua API gagal mengambil data");
   }
 
@@ -90,17 +96,21 @@ async function getData() {
 async function fetchTikTok(url) {
   const apis = [
     `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
+
     `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`,
+
+    `https://tikwm.com/api/?url=${encodeURIComponent(url)}`,
   ];
 
   for (let api of apis) {
     try {
-      let res = await fetch(api);
+      const res = await fetch(api);
 
       if (!res.ok) continue;
 
-      let json = await res.json();
+      const json = await res.json();
 
+      // API 1
       if (json.data) {
         return {
           title: json.data.title,
@@ -110,56 +120,54 @@ async function fetchTikTok(url) {
         };
       }
 
+      // API 2
       if (json.video) {
         return {
           title: json.title || "TikTok Video",
-          play: json.video.noWatermark,
+          play: json.video.noWatermark || json.video,
           music: json.music,
           images: json.images,
         };
       }
-    } catch (e) {
+    } catch (err) {
+      console.warn("API gagal:", api);
+
       continue;
     }
   }
 
-  throw new Error("All API failed");
+  throw new Error("All API Failed");
 }
 
-btnVideo.onclick = function () {
-  if (videoUrl) autoDownload(videoUrl, "tiktok-video.mp4");
+btnVideo.onclick = () => {
+  if (videoUrl) directDownload(videoUrl, "tiktok-video.mp4");
 };
 
-btnMP3.onclick = function () {
-  if (mp3Url) autoDownload(mp3Url, "tiktok-audio.mp3");
+btnMP3.onclick = () => {
+  if (mp3Url) directDownload(mp3Url, "tiktok-audio.mp3");
 };
 
-async function autoDownload(url, filename) {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
+function directDownload(url, filename) {
+  const a = document.createElement("a");
 
-    const blobUrl = window.URL.createObjectURL(blob);
+  a.href = url;
 
-    const a = document.createElement("a");
+  a.download = filename;
 
-    a.href = blobUrl;
-    a.download = filename;
+  document.body.appendChild(a);
 
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+  a.click();
 
-    window.URL.revokeObjectURL(blobUrl);
-  } catch {
-    alert("Download gagal");
-  }
+  a.remove();
 }
 
 function clearData() {
   urlInput.value = "";
+
   video.src = "";
+
   gallery.innerHTML = "";
+
   title.innerText = "";
 
   result.classList.add("hidden");
