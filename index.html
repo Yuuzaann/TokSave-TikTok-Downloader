@@ -8,29 +8,29 @@
 
     <link rel="icon" type="image/png" href="favicon.png" />
 
-    <!-- PERFORMANCE -->
+    <!-- Performance -->
     <link rel="preconnect" href="https://www.tikwm.com" />
     <link rel="dns-prefetch" href="https://www.tikwm.com" />
 
-    <!-- FONT -->
+    <!-- Google Font -->
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- BOOTSTRAP -->
+    <!-- Bootstrap -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
 
-    <!-- ICON -->
+    <!-- Bootstrap Icons -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
     />
 
-    <!-- TAILWIND -->
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="stylesheet" href="style.css" />
@@ -44,7 +44,7 @@
 
           <h1>TokSave</h1>
 
-          <p>Download video, mp3, dan slideshow tanpa watermark</p>
+          <p>Download video, MP3, dan slideshow tanpa watermark</p>
         </div>
 
         <div class="input-area">
@@ -57,11 +57,14 @@
           <button id="fetchBtn">
             <i class="bi bi-search"></i>
           </button>
+
+          <button id="clearBtn">
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
 
         <div id="loading" class="loading hidden">
           <div class="spinner-border text-danger"></div>
-
           <p>Mengambil data...</p>
         </div>
 
@@ -74,13 +77,11 @@
 
           <div class="download-buttons">
             <button id="downloadVideo">
-              <i class="bi bi-download"></i>
-              Video
+              <i class="bi bi-download"></i> Video
             </button>
 
             <button id="downloadMP3">
-              <i class="bi bi-music-note"></i>
-              MP3
+              <i class="bi bi-music-note"></i> MP3
             </button>
           </div>
         </div>
