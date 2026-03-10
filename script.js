@@ -165,17 +165,50 @@ btnMP3.onclick = () => {
   }
 };
 
-function directDownload(url, filename) {
+// Mobile detection
+const isMobile =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
+
+async function directDownload(url, filename) {
+  // For mobile, use fetch + blob approach for auto-download
+  if (isMobile) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up after delay
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      }, 100);
+    } catch (err) {
+      console.error("Download failed:", err);
+      // Fallback to standard method
+      fallbackDownload(url, filename);
+    }
+  } else {
+    // Desktop - use standard method
+    fallbackDownload(url, filename);
+  }
+}
+
+function fallbackDownload(url, filename) {
   const a = document.createElement("a");
-
   a.href = url;
-
   a.download = filename;
-
+  a.style.display = "none";
   document.body.appendChild(a);
-
   a.click();
-
   a.remove();
 }
 
