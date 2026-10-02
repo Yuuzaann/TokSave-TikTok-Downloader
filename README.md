@@ -12,7 +12,7 @@ Features:
 - Download TikTok videos without watermark
 - Extract MP3 audio from TikTok
 - Download TikTok photo slideshow
-- Modern responsive UI
+- Modern responsive UI (tema gelap/terang, riwayat, ZIP slideshow, progres unduhan)
 - Mobile friendly
 
 ## Author

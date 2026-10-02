@@ -1,245 +1,194 @@
-const urlInput = document.getElementById("url");
-const fetchBtn = document.getElementById("fetchBtn");
-const clearBtn = document.getElementById("clearBtn");
+const $ = id => document.getElementById(id);
+const urlInput = $("url"), fetchBtn = $("fetchBtn"), clearBtn = $("clearBtn"), pasteBtn = $("pasteBtn");
+const loading = $("loading"), result = $("result"), errorBox = $("error");
+const video = $("video"), gallery = $("photoGallery");
+const B = { hd: $("dlHD"), sd: $("dlSD"), mp3: $("dlMP3"), zip: $("dlZip"), cover: $("dlCover"), copy: $("copyBtn") };
+const TT = /^https?:\/\/([\w-]+\.)?tiktok(v)?\.com\//i;
 
-const loading = document.getElementById("loading");
-const result = document.getElementById("result");
+let media = {}, busy = false;
 
-const video = document.getElementById("video");
-const title = document.getElementById("title");
+/* ---------- storage aman ---------- */
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
 
-const btnVideo = document.getElementById("downloadVideo");
-const btnMP3 = document.getElementById("downloadMP3");
+/* ---------- tema ---------- */
+$("themeBtn").onclick = () => {
+  const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = t;
+  store.set("ts-theme", t);
+};
 
-const gallery = document.getElementById("photoGallery");
-
-let videoUrl = "";
-let mp3Url = "";
-let photoUrls = [];
-
-fetchBtn.addEventListener("click", getData);
-
-urlInput.addEventListener("keypress", function (e) {
-  if (e.key === "Enter") getData();
+/* ---------- input ---------- */
+fetchBtn.onclick = () => getData();
+clearBtn.onclick = clearData;
+urlInput.addEventListener("keydown", e => { if (e.key === "Enter") getData(); });
+urlInput.addEventListener("input", () => clearBtn.classList.toggle("hidden", !urlInput.value));
+urlInput.addEventListener("paste", () => setTimeout(() => { if (TT.test(urlInput.value.trim())) getData(); }, 0));
+document.addEventListener("keydown", e => {
+  if (e.key === "/" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); urlInput.focus(); }
 });
-
-clearBtn.addEventListener("click", clearData);
-
-
-
-/* RANDOM FILENAME */
-function randomName(ext) {
-
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  let result = "";
-
-  for (let i = 0; i < 10; i++) {
-
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-
-  }
-
-  return result + "." + ext;
-}
-
-
-
-async function getData() {
-  const url = urlInput.value.trim();
-
-  if (!url) {
-    alert("Masukkan link TikTok");
-    return;
-  }
-
-  loading.classList.remove("hidden");
-  result.classList.add("hidden");
-
+pasteBtn.onclick = async () => {
   try {
-    const data = await fetchTikTok(url);
+    urlInput.value = (await navigator.clipboard.readText()).trim();
+    urlInput.dispatchEvent(new Event("input"));
+    getData();
+  } catch { urlInput.focus(); showError("Browser tidak mengizinkan akses clipboard. Tempel manual dengan Ctrl+V."); }
+};
+const qp = new URLSearchParams(location.search).get("url");
+if (qp) { urlInput.value = qp; urlInput.dispatchEvent(new Event("input")); getData(); }
 
-    title.innerText = data.title || "TikTok Video";
+const showError = m => { errorBox.textContent = m; errorBox.classList.toggle("hidden", !m); };
+const fmt = n => n == null ? "" : Intl.NumberFormat("id", { notation: "compact" }).format(n);
+const slug = s => (s || "").normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "_").slice(0, 40);
+const fileBase = d => slug(d.author) && slug(d.title) ? `${slug(d.author)}_${slug(d.title)}` : (slug(d.title) || slug(d.author) || "toksave_" + Date.now());
 
-    videoUrl = data.play;
-    mp3Url = data.music;
-    photoUrls = data.images || [];
-
-    gallery.innerHTML = "";
-
-    btnVideo.style.display = "none";
-    btnMP3.style.display = "none";
-
-
-
-    // slideshow
-    if (photoUrls.length > 0) {
-      video.style.display = "none";
-
-      photoUrls.forEach((img, index) => {
-        const card = document.createElement("div");
-
-        card.className = "photo-card";
-
-        card.innerHTML = `
-        <img src="${img}">
-        <button class="photo-download">
-          Download
-        </button>
-        `;
-
-        card.querySelector("button").onclick = () => {
-          directDownload(img, randomName("jpg"));
-        };
-
-        gallery.appendChild(card);
-      });
-    }
-
-
-
-    // video
-    else if (videoUrl) {
-      video.style.display = "block";
-      video.src = videoUrl;
-
-      btnVideo.style.display = "block";
-
-      if (mp3Url) btnMP3.style.display = "block";
-    }
-
-    result.classList.remove("hidden");
-
-  } catch (err) {
-
-    console.error(err);
-    alert("Semua API gagal mengambil data");
-
-  }
-
-  loading.classList.add("hidden");
+/* ---------- ambil data ---------- */
+async function getData(url = urlInput.value.trim()) {
+  if (busy) return;
+  showError("");
+  if (!TT.test(url)) return showError("Link tidak valid. Contoh: https://www.tiktok.com/@user/video/123 atau https://vt.tiktok.com/xxxx");
+  busy = true; fetchBtn.disabled = true;
+  loading.classList.remove("hidden"); result.classList.add("hidden");
+  try {
+    const d = await fetchTikTok(url);
+    render(d);
+    addHistory({ url, title: d.title, author: d.author, cover: d.cover });
+  } catch (e) {
+    console.error(e);
+    showError(e.userMsg || "Gagal mengambil data. Pastikan video publik, tunggu beberapa detik, lalu coba lagi.");
+  } finally { busy = false; fetchBtn.disabled = false; loading.classList.add("hidden"); }
 }
-
-
 
 async function fetchTikTok(url) {
-
-  const apis = [
-
-    `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
-
-    `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`,
-
-    `https://tikwm.com/api/?url=${encodeURIComponent(url)}`
-
-  ];
-
-
-
-  for (let api of apis) {
-
+  const q = encodeURIComponent(url);
+  let lastMsg = "";
+  for (let attempt = 0; attempt < 2; attempt++) {
     try {
-
-      const res = await fetch(api);
-
-      if (!res.ok) continue;
-
-      const json = await res.json();
-
-
-
-      // API 1
-      if (json.data) {
-
-        return {
-          title: json.data.title,
-          play: json.data.play,
-          music: json.data.music,
-          images: json.data.images
-        };
-
+      const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
+      const res = await fetch(`https://www.tikwm.com/api/?url=${q}&hd=1`, { signal: ctl.signal });
+      clearTimeout(t);
+      const j = await res.json();
+      if (j.data && (j.data.play || (j.data.images || []).length)) {
+        const x = j.data;
+        return { title: x.title, author: x.author?.unique_id, cover: x.cover, play: x.play, hd: x.hdplay, music: x.music,
+          images: x.images || [], duration: x.duration, plays: x.play_count, likes: x.digg_count };
       }
+      lastMsg = j.msg || "";
+      if (/limit/i.test(lastMsg)) { await new Promise(r => setTimeout(r, 1500)); continue; } // rate limit: coba lagi
+      break;
+    } catch { await new Promise(r => setTimeout(r, 800)); }
+  }
+  const err = new Error(lastMsg || "API gagal");
+  if (/private|not exist|removed|parsing/i.test(lastMsg)) err.userMsg = "Video tidak ditemukan. Mungkin privat atau sudah dihapus.";
+  throw err;
+}
 
+function render(d) {
+  media = { hd: d.hd || d.play, sd: d.play, mp3: d.music, cover: d.cover, images: d.images, base: fileBase(d) };
+  const photos = d.images.length > 0;
+  $("title").textContent = d.title || "Video TikTok";
+  $("author").textContent = d.author ? "@" + d.author : "";
+  $("stats").innerHTML = [d.duration ? `<span>${Math.floor(d.duration / 60)}:${String(d.duration % 60).padStart(2, "0")}</span>` : "",
+    d.plays != null ? `<span>${fmt(d.plays)} tayangan</span>` : "", d.likes != null ? `<span>${fmt(d.likes)} suka</span>` : "",
+    photos ? `<span>${d.images.length} foto</span>` : ""].join("");
 
+  video.classList.toggle("hidden", photos); gallery.classList.toggle("hidden", !photos);
+  gallery.replaceChildren();
+  video.removeAttribute("src"); video.load();
+  B.hd.classList.toggle("hidden", photos || !media.hd);
+  B.sd.classList.toggle("hidden", photos || !media.sd || media.sd === media.hd);
+  B.zip.classList.toggle("hidden", !photos);
+  B.mp3.classList.toggle("hidden", !media.mp3);
+  B.cover.classList.toggle("hidden", !media.cover);
+  B.copy.classList.toggle("hidden", photos);
 
-      // API 2
-      if (json.video) {
+  if (photos) d.images.forEach((src, i) => {
+    const card = document.createElement("div"); card.className = "photo-card";
+    const im = new Image(); im.src = src; im.alt = `Foto ${i + 1}`; im.loading = "lazy";
+    const b = document.createElement("button"); b.className = "photo-download"; b.textContent = "Unduh";
+    b.onclick = () => download(src, `${media.base}_${i + 1}.jpg`, b);
+    card.append(im, b); gallery.append(card);
+  });
+  else {
+    video.poster = media.cover || "";
+    video.src = media.sd || media.hd;
+    video.onerror = () => showError("Pratinjau gagal dimuat, tapi tombol unduh mungkin masih berfungsi.");
+  }
+  result.classList.remove("hidden");
+  result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
-        return {
-          title: json.title || "TikTok Video",
-          play: json.video.noWatermark || json.video,
-          music: json.music,
-          images: json.images
-        };
-
-      }
-
-    } catch (err) {
-
-      console.warn("API gagal:", api);
-
-      continue;
-
+/* ---------- unduh ---------- */
+B.hd.onclick = () => download(media.hd, media.base + "_HD.mp4", B.hd);
+B.sd.onclick = () => download(media.sd, media.base + "_SD.mp4", B.sd);
+B.mp3.onclick = () => download(media.mp3, media.base + ".mp3", B.mp3);
+B.cover.onclick = () => download(media.cover, media.base + "_cover.jpg", B.cover);
+B.copy.onclick = async () => {
+  try { await navigator.clipboard.writeText(media.hd || media.sd); flash(B.copy, "Tersalin"); }
+  catch { prompt("Salin link file:", media.hd || media.sd); }
+};
+B.zip.onclick = async () => {
+  const label = B.zip.innerHTML; B.zip.disabled = true;
+  try {
+    if (!window.JSZip) throw new Error("no jszip");
+    const zip = new JSZip();
+    for (let i = 0; i < media.images.length; i++) {
+      B.zip.textContent = `${i + 1}/${media.images.length}`;
+      zip.file(`${media.base}_${i + 1}.jpg`, await (await fetch(media.images[i])).blob());
     }
-  }
-
-  throw new Error("All API Failed");
-}
-
-
-
-btnVideo.onclick = () => {
-
-  if (videoUrl) {
-
-    directDownload(videoUrl, randomName("mp4"));
-
-  }
-
+    save(await zip.generateAsync({ type: "blob" }), media.base + ".zip");
+  } catch { showError("ZIP gagal dibuat (kemungkinan diblokir CORS). Unduh foto satu per satu lewat tombol di tiap gambar."); }
+  B.zip.innerHTML = label; B.zip.disabled = false;
 };
 
-
-
-btnMP3.onclick = () => {
-
-  if (mp3Url) {
-
-    directDownload(mp3Url, randomName("mp3"));
-
-  }
-
-};
-
-
-
-function directDownload(url, filename) {
-
+function flash(btn, text) { const h = btn.innerHTML; btn.textContent = text; setTimeout(() => btn.innerHTML = h, 1500); }
+function save(blob, name) {
   const a = document.createElement("a");
-
-  a.href = url;
-
-  a.download = filename;
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  a.remove();
-
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 8000);
+}
+async function download(url, name, btn) {
+  if (!url) return;
+  const label = btn.innerHTML; btn.disabled = true;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+    const total = +res.headers.get("content-length") || 0, reader = res.body.getReader(), chunks = []; let got = 0;
+    for (;;) {
+      const { done, value } = await reader.read(); if (done) break;
+      chunks.push(value); got += value.length;
+      if (total) btn.textContent = Math.round(got / total * 100) + "%";
+    }
+    save(new Blob(chunks), name);
+  } catch { window.open(url, "_blank", "noopener"); }  // fallback jika CORS memblokir
+  btn.innerHTML = label; btn.disabled = false;
 }
 
-
+/* ---------- riwayat ---------- */
+function addHistory(item) {
+  const list = [item, ...store.get("ts-history", []).filter(h => h.url !== item.url)].slice(0, 10);
+  store.set("ts-history", list); renderHistory();
+}
+function renderHistory() {
+  const list = store.get("ts-history", []);
+  $("historyWrap").classList.toggle("hidden", !list.length);
+  const box = $("historyList"); box.replaceChildren();
+  list.forEach(h => {
+    const b = document.createElement("button"); b.className = "h-item";
+    const im = new Image(); im.alt = ""; im.loading = "lazy"; if (h.cover) im.src = h.cover;
+    const s = document.createElement("span"); s.textContent = h.title || "@" + (h.author || "video");
+    b.append(im, s);
+    b.onclick = () => { urlInput.value = h.url; urlInput.dispatchEvent(new Event("input")); getData(h.url); scrollTo({ top: 0, behavior: "smooth" }); };
+    box.append(b);
+  });
+}
+$("clearHistory").onclick = () => { store.set("ts-history", []); renderHistory(); };
+renderHistory();
 
 function clearData() {
-
-  urlInput.value = "";
-
-  video.src = "";
-
-  gallery.innerHTML = "";
-
-  title.innerText = "";
-
-  result.classList.add("hidden");
-
+  urlInput.value = ""; video.removeAttribute("src"); video.load(); gallery.replaceChildren();
+  result.classList.add("hidden"); clearBtn.classList.add("hidden"); showError(""); urlInput.focus();
 }

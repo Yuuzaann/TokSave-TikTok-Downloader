@@ -1,114 +1,98 @@
 <!doctype html>
-<html lang="en">
+<html lang="id" data-theme="dark">
 <head>
-
-<meta charset="UTF-8" />
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-
-<meta name="theme-color" content="#0f172a">
-
-<title>TokSave - TikTok Downloader</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a1020">
+<title>TokSave - Download Video TikTok Tanpa Watermark</title>
+<meta name="description" content="Download video TikTok tanpa watermark, MP3, dan semua foto slideshow sekaligus. Gratis, tanpa akun.">
 <link rel="icon" type="image/png" href="favicon.png">
-
 <link rel="preconnect" href="https://www.tikwm.com">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-<script src="https://cdn.tailwindcss.com"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>try{var t=localStorage.getItem("ts-theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
+<header class="top">
+  <a class="brand" href="#"><img src="favicon.png" alt="" width="28" height="28">TokSave</a>
+  <nav><a href="#cara">Cara pakai</a><a href="#faq">FAQ</a></nav>
+  <button id="themeBtn" class="icon" aria-label="Ganti tema"><i class="bi bi-circle-half"></i></button>
+</header>
 
-<div class="app-wrapper">
+<main>
+<section class="hero">
+  <h1>Simpan video TikTok tanpa watermark</h1>
+  <p>Tempel link, pilih HD, MP3, atau semua foto slideshow sekaligus. Tanpa akun dan tanpa instal.</p>
 
-<div class="downloader-card">
+  <div class="tool">
+    <div class="input-area">
+      <i class="bi bi-link-45deg lead"></i>
+      <input id="url" type="url" placeholder="Tempel link TikTok di sini" autocomplete="off" aria-label="Link TikTok">
+      <button id="clearBtn" class="icon hidden" aria-label="Hapus"><i class="bi bi-x-lg"></i></button>
+      <button id="pasteBtn" class="ghost">Tempel</button>
+      <button id="fetchBtn" class="go">Ambil</button>
+    </div>
+    <p id="error" class="error hidden" role="alert"></p>
+    <div id="loading" class="loading hidden"><span class="spin"></span>Mengambil data...</div>
 
-<div class="header">
+    <div id="result" class="result hidden">
+      <div class="preview">
+        <video id="video" controls playsinline></video>
+        <div id="photoGallery" class="photo-gallery"></div>
+      </div>
+      <div class="info">
+        <h3 id="title"></h3>
+        <p id="author" class="mute"></p>
+        <p id="stats" class="stats"></p>
+        <div class="actions">
+          <button id="dlHD" class="go"><i class="bi bi-download"></i> Video HD</button>
+          <button id="dlSD" class="ghost"><i class="bi bi-download"></i> Video SD</button>
+          <button id="dlMP3" class="ghost"><i class="bi bi-music-note-beamed"></i> MP3</button>
+          <button id="dlZip" class="go"><i class="bi bi-file-zip"></i> Semua foto (ZIP)</button>
+          <button id="dlCover" class="ghost"><i class="bi bi-image"></i> Cover</button>
+          <button id="copyBtn" class="ghost"><i class="bi bi-clipboard"></i> Salin link file</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<i class="bi bi-tiktok logo"></i>
+  <div id="historyWrap" class="history hidden">
+    <div class="row"><h2>Riwayat terakhir</h2><button id="clearHistory" class="link">Hapus riwayat</button></div>
+    <div id="historyList"></div>
+  </div>
+</section>
 
-<h1>TokSave</h1>
+<section class="why">
+  <div><h3>Bersih</h3><p>Tanpa logo dan username yang berpindah-pindah di layar.</p></div>
+  <div><h3>Lengkap</h3><p>Video HD/SD, audio MP3, cover, dan foto slideshow dalam satu ZIP.</p></div>
+  <div><h3>Privat</h3><p>Riwayat hanya tersimpan di browser kamu, bukan di server.</p></div>
+</section>
 
-<p>Download video, MP3, slideshow tanpa watermark</p>
+<section id="cara" class="how">
+  <h2>Cara pakai</h2>
+  <ol>
+    <li><b>Salin link</b> Di TikTok, ketuk Bagikan lalu Salin Link.</li>
+    <li><b>Tempel</b> Tempel di kolom atas. Link yang ditempel langsung diproses.</li>
+    <li><b>Pilih format</b> Video HD, SD, MP3, cover, atau ZIP foto.</li>
+    <li><b>Simpan</b> File terunduh dengan nama sesuai judul videonya.</li>
+  </ol>
+  <p class="note">Jika unduhan malah memutar video, tekan lama tombolnya lalu pilih Simpan. Pintasan: tekan <kbd>/</kbd> untuk fokus ke kolom link.</p>
+</section>
 
-</div>
+<section id="faq" class="faq">
+  <h2>Pertanyaan umum</h2>
+  <details><summary>Apakah gratis?</summary><p>Ya, tanpa batas unduhan dan tanpa akun.</p></details>
+  <details><summary>Kenapa muncul "Gagal mengambil data"?</summary><p>Biasanya video privat, sudah dihapus, atau layanan sedang membatasi permintaan. Tunggu beberapa detik lalu coba lagi.</p></details>
+  <details><summary>Bisa unduh slideshow foto?</summary><p>Bisa. Unduh satu per satu atau semuanya sekaligus dalam ZIP.</p></details>
+  <details><summary>Apakah ini legal?</summary><p>Untuk penggunaan pribadi umumnya boleh. Minta izin kreator sebelum mengunggah ulang atau memakainya secara komersial.</p></details>
+</section>
+</main>
 
-
-<div class="input-area">
-
-<input id="url"
-type="url"
-placeholder="Paste link TikTok..."
-autocomplete="url">
-
-<button id="fetchBtn">
-<i class="bi bi-search"></i>
-</button>
-
-<button id="clearBtn">
-<i class="bi bi-x-lg"></i>
-</button>
-
-</div>
-
-
-<div id="loading" class="loading hidden">
-
-<div class="spinner-border text-danger"></div>
-
-<p>Mengambil data...</p>
-
-</div>
-
-
-<div id="result" class="result hidden">
-
-<h4 id="title"></h4>
-
-<video id="video" controls playsinline></video>
-
-<div id="photoGallery" class="photo-gallery"></div>
-
-<div class="download-buttons">
-
-<button id="downloadVideo">
-<i class="bi bi-download"></i> Video
-</button>
-
-<button id="downloadMP3">
-<i class="bi bi-music-note"></i> MP3
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<footer class="footer">
-
-<p>
-© 2026
-<a href="https://github.com/Yuuzaann" target="_blank">Yuuzaann</a>
-</p>
-
+<footer class="foot">
+  <p>© 2026 TokSave oleh <a href="https://github.com/Yuuzaann" target="_blank" rel="noopener">Yuuzaann</a>. Tidak berafiliasi dengan TikTok atau ByteDance.</p>
 </footer>
-
-</div>
-
 <script src="script.js"></script>
-
 </body>
 </html>
